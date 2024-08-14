@@ -71,7 +71,7 @@ Assuming `my-snap` is the name of the snap that uses the env-injector extension:
 
 * `sudo snap set <my-snap> apps.server.env.endpoint="/v2/store"` will be mapped to `ENDPOINT="/v2/store"` and exported only to the `server` app.
 
-For environment files, where `path` refers to the `envfile` path:
+For environment files, where `path` refers to the env file path:
 
 |        | Snap Configuration Option   |
 |--------|-----------------------------|
