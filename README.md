@@ -66,13 +66,13 @@ The process works as follows:
 
 - It makes a request to the [snapd API](https://snapcraft.io/docs/using-the-api) through the snapd Unix socket.
 
-- It reads the available environment variables or paths to the envfiles.
+- It reads the available environment variables or paths to the env files.
 
 - It translates the snap options into environment variables.
 
-- If available, it sources the envfiles.
+- If available, it sources the env files.
 
-- It sources all envfiles.
+- It sources all env files.
 
 - It sources all variables.
 
