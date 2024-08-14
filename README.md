@@ -20,7 +20,7 @@ Assuming `my-snap` is the name of the snap that uses the env-injector extension:
 
 * `sudo snap set <my-snap> env.default-port=8080` will be mapped to `DEFAULT_PORT=8080` and exported globally.
 
-* `sudo snap set <my-snap> apps.server.env.endpoint="/v2/store"` will be mapped to `ENDPOINT="/v2/store"` and will be visible only to the `server` app.
+* `sudo snap set <my-snap> apps.server.env.endpoint="/v2/store"` will be mapped to `ENDPOINT="/v2/store"` and exported only to the `server` app.
 
 For environment files, where `path` refers to the `envfile` path:
 
