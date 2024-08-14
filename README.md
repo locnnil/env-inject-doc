@@ -1,4 +1,4 @@
-# Environment Variables Injector
+# The env-injector extension
 
 This extension is designed to help users export snap options configured with the [snap set command](https://snapcraft.io/docs/configuration-in-snaps) into environment variables.
 
