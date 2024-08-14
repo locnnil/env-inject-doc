@@ -41,8 +41,8 @@ The precedence of environment variables follows this order:
 
 1. Env vars from local snap config options.
 2. Env vars from global snap config options.
-3. Env vars extracted from the **local** `envfile`.
-4. Env vars extracted from the **global** `envfile`.
+3. Env vars extracted from the **local** env file.
+4. Env vars extracted from the **global** env file.
 
 | Accepted Characters in Snap Option Keys                   | Mapped Environment Variable Names |
 |-----------------------------------------------------------|-----------------------------------|
