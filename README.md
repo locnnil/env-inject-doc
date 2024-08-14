@@ -58,7 +58,7 @@ The process works as follows:
 
 ### During Build:
 
-- An application responsible for dynamically exporting environment variables is added to the snap's [command chain](https://snapcraft.io/docs/snapcraft-app-and-service-metadata#heading--command-chain).
+- An application responsible for dynamically exporting environment variables is added to the needed apps's [command chain](https://snapcraft.io/docs/snapcraft-app-and-service-metadata#heading--command-chain).
 
 ### At Runtime:
 
