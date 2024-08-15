@@ -60,7 +60,7 @@ sudo snap set <my-snap> envfile=/var/snap/my-snap/common/config.env
 
 The environment variables inside `config.env` get exported to all apps that use the extension. 
 
-If the snap has multiple apps that use the extension, the user can avoid conflicts by targetting a single app.
+If the snap has multiple apps that use the extension, the user can avoid conflicts by targeting a single app.
 
 For example, to export the content of `/var/snap/my-snap/common/server.env` to `server` app:
 ```bash
@@ -73,6 +73,8 @@ This can be overridden with an alias; see [env alias](#env-alias).
 Refer [here](#syntax) for more details on the syntax.
 
 ## Syntax and Rules
+
+To avoid conflicts with existing snap options, some rules are defined below, along with the allowed syntax accepted by the extension exporter program.
 
 ### Syntax
 
@@ -90,14 +92,6 @@ Snap configuration options to environment variable mapping:
 
 The `key` is converted to environment variable name based on the following rules:
 
-| Accepted characters in snap option keys                   | Mapped environment variable names |
-|-----------------------------------------------------------|-----------------------------------|
-| Lowercase letters                                         | Uppercase letters                 |
-| Numbers (not at the beginning and with lowercase letters) | Numbers                           |
-| Hyphens (surrounded by lowercase letters)                 | Underscores                       |
-
-Any characters not listed in the first column of the above table are not allowed.
-
 Snap configuration options for setting env file paths:
 
 |        | Snap configuration option   |
@@ -105,6 +99,14 @@ Snap configuration options for setting env file paths:
 | Global | `envfile=<path>`            |
 | Local  | `apps.<app>.envfile=<path>` |
 
+
+| Accepted characters in snap option keys                   | Mapped environment variable names |
+|-----------------------------------------------------------|-----------------------------------|
+| Lowercase letters                                         | Uppercase letters                 |
+| Numbers (not at the beginning and with lowercase letters) | Numbers                           |
+| Hyphens (surrounded by lowercase letters)                 | Underscores                       |
+
+Any characters not listed in the first column of the above table are not allowed.
 
 ### Order precedence
 
