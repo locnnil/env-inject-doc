@@ -92,14 +92,6 @@ Snap configuration options to environment variable mapping:
 
 The `key` is converted to environment variable name based on the following rules:
 
-Snap configuration options for setting env file paths:
-
-|        | Snap configuration option   |
-|--------|-----------------------------|
-| Global | `envfile=<path>`            |
-| Local  | `apps.<app>.envfile=<path>` |
-
-
 | Accepted characters in snap option keys                   | Mapped environment variable names |
 |-----------------------------------------------------------|-----------------------------------|
 | Lowercase letters                                         | Uppercase letters                 |
@@ -107,6 +99,13 @@ Snap configuration options for setting env file paths:
 | Hyphens (surrounded by lowercase letters)                 | Underscores                       |
 
 Any characters not listed in the first column of the above table are not allowed.
+
+Snap configuration options for setting env file paths:
+
+|        | Snap configuration option   |
+|--------|-----------------------------|
+| Global | `envfile=<path>`            |
+| Local  | `apps.<app>.envfile=<path>` |
 
 ### Order precedence
 
