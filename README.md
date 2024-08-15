@@ -1,98 +1,109 @@
 # The env-injector extension
 
-The env-injector extension allows developers to export snap options as environment variables within the snap sandbox.
-These options can be configured using the [snap set command](https://snapcraft.io/docs/configuration-in-snaps) or via the [the snap API](https://snapcraft.io/docs/using-the-api).
-This extension dynamically converts snap configuration options into environment variables, which are then accessible to the app within the snap sandbox.
-For this to work, the snap options must follow a specific pattern that the extension can match.
-The extension also supports environment files, where the snap configuration options specify the path to the environment file.
+The env-injector extension adds support for passing user-defined environment variables to snaps. 
+By adding the extension to snapped apps, the user of the snap will be allowed to set environment variables via [snap configuration options](https://snapcraft.io/docs/configuration-in-snaps) or environment files and have them exported to the apps on startup.
 
-
-## How to use it
-
-Add `extensions: [ env-injector ]` to the application definition in your `snapcraft.yaml` file.
-By default the extension defines an app alias in the format of an env variable to be used in the snap config with the same name as defined in your apps section of the `yaml`.
-But if you wish, you can avoid to use this default by creating an environment Variable yourself with named as `env_alias` with the name that you wish to use to set the environment variables to your app.
+## Using the extension
 
 Add `extensions: [ env-injector ]` to the application definition in your `snapcraft.yaml` file.
 
-By default, this extension creates an environment variable with the same name as the app defined in the yaml, which can be used in the snap configuration.
-However, if you prefer, you can define this environment variable yourself by using `env_alias` with the name you want to use for setting the environment variables in your app.
-
-- Default usage example:
+Example, adding the extension to an app named `server`:
 ```yaml
 apps:
-  rabbitmq:
-    command: bin/run.sh
+  server:
+    command: run.sh
     daemon: simple
     extensions: [ env-injector ]
 ```
 
-This way you can define environment variables to your application by doing:
+With this, the user of the snap will be enabled to pass environment variables via snap options or env files.
+
+### Pass environment variables via snap configuration options
+
+For example, to set `HTTP_PORT=8080` for `web` app, the user can run:
 
 ```bash
-sudo snap set <snap-name> apps.rabbitmq.env.rabbitmq-default-pass="password"
+sudo snap set <snap-name> env.http-port=8080
 ```
 
-- Rewriting `env_alias` usage example:
+Internally, the extension converts `http-port` to `HTTP_PORT` and exports it before executing the app's command.
 
-```yaml
-apps:
-  rabbitmq:
-    command: bin/run.sh
-    daemon: simple
-    environment:
-      env_alias: broker
-    extensions: [ env-injector ]
-```
+The above syntax is to set environment variables for all the apps that use this extension within the snap.
+We refer to these as *global options*. 
+With the given example, the snap only has one app which uses the extension so setting a global option is acceptable. 
 
-This way you can define environment variables to your application by doing:
+If the snap has multiple apps that need support for environment variables with conflicting variable names, then the user can target the desired app by setting a *local option*.
+To set an environment variable for a single app, the user needs to add an `apps.<app>` prefix to the snap config option.
 
+Using the same example as above but targetting only the `server` app:
 ```bash
-sudo snap set <snap-name> apps.broker.env.rabbitmq-default-pass="password"
+sudo snap set <snap-name> apps.server.env.http-port=8080
 ```
 
-On both cases, for the `rabbitmq` app, the snap option will mapped into the environment variable: `RABBITMQ_DEFAULT_PASS=password`
+The app's name is taken from the definition in the snapcraft YAML file.
+This can be overridden with an alias; see [env alias](#env-alias).
 
-To prevent conflicts with other snap configurations and to maintain some level of isolation between apps, the following rules apply:
+Refer [here](#syntax) for more details on the syntax.
+
+
+### Pass environment variables via env files
+
+A list of environment variables can be passed to the snap via one or more environment files.
+
+> **Note**  
+> For confined snaps, the files need to be accessible from within the snap, either by placing them in the [writable area](https://snapcraft.io/docs/data-locations) of the snap or via a file access interface, such as the [home](https://snapcraft.io/docs/home-interface) or [personal-files](https://snapcraft.io/docs/personal-files-interface).
+
+For example, to set the path to the env file located at `/var/snap/my-snap/common/config.env`:
+```bash
+sudo snap set <my-snap> envfile=/var/snap/my-snap/common/config.env
+```
+
+The environment variables inside `config.env` get exported to all apps that use the extension. 
+
+If the snap has multiple apps that use the extension, the user can avoid conflicts by targetting a single app.
+
+For example, to export the content of `/var/snap/my-snap/common/server.env` to `server` app:
+```bash
+sudo snap set <my-snap> apps.server.envfile=/var/snap/my-snap/common/server.env
+```
+
+The app's name is taken from the definition in the snapcraft YAML file.
+This can be overridden with an alias; see [env alias](#env-alias).
+
+Refer [here](#syntax) for more details on the syntax.
+
+## Syntax and Rules
+
+### Syntax
+
+The snap configuration options expect the following syntax for the keys:
 
 * **Global:** Environment variables are visible to all apps within the snap that use this extension.
 * **Local:** Environment variables are visible only to the specific `app` defined during the snap set command.
 
-|        | Snap Configuration Option      | Environment Variable |
+Snap configuration options to environment variable mapping:
+
+|        | Snap configuration option      | Environment variable |
 |--------|--------------------------------|----------------------|
 | Global | `env.<key>=<value>`            | `<KEY>=<value>`      |
 | Local  | `apps.<app>.env.<key>=<value>` | `<KEY>=<value>`      |
 
-**Examples**
+The `key` is converted to environment variable name based on the following rules:
 
-Assuming `my-snap` is the name of the snap that uses the env-injector extension:
+| Accepted characters in snap option keys                   | Mapped environment variable names |
+|-----------------------------------------------------------|-----------------------------------|
+| Lowercase letters                                         | Uppercase letters                 |
+| Numbers (not at the beginning and with lowercase letters) | Numbers                           |
+| Hyphens (surrounded by lowercase letters)                 | Underscores                       |
 
-* `sudo snap set <my-snap> env.default-port=8080` will be mapped to `DEFAULT_PORT=8080` and exported globally.
+Any characters not listed in the first column of the above table are not allowed.
 
-* `sudo snap set <my-snap> apps.server.env.endpoint="/v2/store"` will be mapped to `ENDPOINT="/v2/store"` and exported only to the `server` app.
+Snap configuration options for setting env file paths:
 
-For environment files, where `path` refers to the env file path:
-
-|        | Snap Configuration Option   |
+|        | Snap configuration option   |
 |--------|-----------------------------|
 | Global | `envfile=<path>`            |
 | Local  | `apps.<app>.envfile=<path>` |
-
-**Examples**
-
-* `sudo snap set <my-snap> envfile=$HOME/envfile.env` makes all the environment variables globally visible.
-
-* `sudo snap set <my-snap> apps.server.envfile=$HOME/envfile.env` makes the environment variables visible only to the `server` app.
-
-> [!NOTE]
-> Depending on the [snap confinement](https://snapcraft.io/docs/snap-confinement), it's necessary for the snap to have access to the location of the environment file.
-> It can be done in different ways:
-> - Having a [classic confined](https://snapcraft.io/docs/classic-confinement) snap.
-> - Using the [home interface](https://snapcraft.io/docs/home-interface) and using the $HOME directory.
-> - Using the [system-files interface](https://snapcraft.io/docs/system-files-interface).
-> - Using the [snap common directory](https://snapcraft.io/docs/data-locations#heading--system).
-
-## Syntax and Rules
 
 
 ### Order precedence
@@ -104,27 +115,42 @@ The environment variables are processed in the following order:
 3. Env vars from global snap config options.
 4. Env vars from local snap config options.
 
-### Accepted Syntax
+### Env alias
 
-| Accepted Characters in Snap Option Keys                   | Mapped Environment Variable Names |
-|-----------------------------------------------------------|-----------------------------------|
-| Lowercase letters                                         | Uppercase letters                 |
-| Numbers (not at the beginning and with lowercase letters) | Numbers                           |
-| Hyphens (surrounded by lowercase letters)                 | Underscores                       |
+The app's name is taken from the definition in the snapcraft YAML file. 
+If necessary, this can be overriden by setting the `env_alias` variable. 
 
-Any characters not listed in the first column of the above table are not allowed.
+For example, overriding `server` with `web-server`:
+```yaml
+apps:
+  server:
+    command: run.sh
+    daemon: simple
+    extensions: [ env-injector ]
+    environments:
+      env_alias: web-server
+```
 
+Then, the local option can be set as:
+```bash
+sudo snap set <snap-name> apps.web-server.env.http-port=8080
+```
 
-## env-injector extension Workflow
+Similarly, the local env file can be set as:
+```bash
+sudo snap set <my-snap> apps.web-server.envfile=/var/snap/my-snap/common/server.env
+```
 
-This section brings some context on how the extension behaves.
-The process is divided in two sections, on what happening during the build of the snap and during the snap runtime.
-The process works as follows:
+## Extension's internals
 
-### During Build:
+This section provides some high level context on how the extension works.
+
+### During Build
 
 <!--TODO: Put a link to exporter program repository -->
-- An application responsible for dynamically exporting environment variables (the exporter program) is added to the needed apps's [command chain](https://snapcraft.io/docs/snapcraft-app-and-service-metadata#heading--command-chain).
+For each app that uses the extension:
+1. The application responsible for processing environment variables (the exporter program) is added to its [command chain](https://snapcraft.io/docs/snapcraft-app-and-service-metadata#heading--command-chain).
+2. The application's name is taken either from the app's name or `env_alias` set by the developer.
 
 ### At Runtime:
 
@@ -136,9 +162,9 @@ The process works as follows:
 
 4. It translates the snap options into environment variables.
 
-5. If available, it sources the env files.
+5. If available, it loads the env files and sets the listed variables.
 
-6. It sources all converted environment variables.
+6. It sets all converted environment variables.
 
-7. It then executes the snapped application.
+7. Executes the application's chained command.
 
