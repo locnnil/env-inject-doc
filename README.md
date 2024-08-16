@@ -111,8 +111,8 @@ Snap configuration options for setting env file paths:
 
 The environment variables are processed in the following order:
 
-1. Env vars extracted from the **global** env file.
-2. Env vars extracted from the **local** env file.
+1. Env vars extracted from the global env file.
+2. Env vars extracted from the local env file.
 3. Env vars from global snap config options.
 4. Env vars from local snap config options.
 
