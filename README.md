@@ -92,11 +92,11 @@ Snap configuration options to environment variable mapping:
 
 The `key` is converted to environment variable name based on the following rules:
 
-| Accepted characters in snap option keys                   | Mapped environment variable names |
-|-----------------------------------------------------------|-----------------------------------|
-| Lowercase letters                                         | Uppercase letters                 |
-| Numbers (not at the beginning and with lowercase letters) | Numbers                           |
-| Hyphens (surrounded by lowercase letters)                 | Underscores                       |
+| Accepted characters in snap option keys | Mapped environment variable names |
+|-----------------------------------------|-----------------------------------|
+| Lowercase letters                       | Uppercase letters                 |
+| Numbers (not at the beginning)          | Numbers                           |
+| Hyphens (not at the beginning or end)   | Underscores                       |
 
 Any characters not listed in the first column of the above table are not allowed.
 
