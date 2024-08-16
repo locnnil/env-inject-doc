@@ -16,7 +16,7 @@ apps:
     extensions: [ env-injector ]
 ```
 
-With this, the user of the snap will be enabled to pass environment variables via snap options or env files.
+With this, the user of the snap will be able to pass environment variables via snap options or env files.
 
 ### Pass environment variables via snap configuration options
 
@@ -28,7 +28,7 @@ sudo snap set <snap-name> env.http-port=8080
 
 Internally, the extension converts `http-port` to `HTTP_PORT` and exports it before executing the app's command.
 
-The above syntax is to set environment variables for all the apps that use this extension within the snap.
+The above syntax is to set environment variables for all the apps that use this extension, within the snap.
 We refer to these as *global options*. 
 With the given example, the snap only has one app which uses the extension so setting a global option is acceptable. 
 
@@ -51,7 +51,7 @@ Refer [here](#syntax) for more details on the syntax.
 A list of environment variables can be passed to the snap via one or more environment files.
 
 > **Note**  
-> For confined snaps, the files need to be accessible from within the snap, either by placing them in the [writable area](https://snapcraft.io/docs/data-locations) of the snap or via a file access interface, such as the [home](https://snapcraft.io/docs/home-interface) or [personal-files](https://snapcraft.io/docs/personal-files-interface).
+> For confined snaps, the files need to be accessible from within the snap, either by placing them in the [writable area](https://snapcraft.io/docs/data-locations) of the snap or via a file access interface, such as the [home interface](https://snapcraft.io/docs/home-interface) or [personal-files interface](https://snapcraft.io/docs/personal-files-interface).
 
 For example, to set the path to the env file located at `/var/snap/my-snap/common/config.env`:
 ```bash
@@ -90,7 +90,7 @@ Snap configuration options to environment variable mapping:
 | Global | `env.<key>=<value>`            | `<KEY>=<value>`      |
 | Local  | `apps.<app>.env.<key>=<value>` | `<KEY>=<value>`      |
 
-The `key` is converted to environment variable name based on the following rules:
+The `key` is converted to an environment variable name based on the following rules:
 
 | Accepted characters in snap option keys | Mapped environment variable names |
 |-----------------------------------------|-----------------------------------|
@@ -98,7 +98,7 @@ The `key` is converted to environment variable name based on the following rules
 | Numbers (not at the beginning)          | Numbers                           |
 | Hyphens (not at the beginning or end)   | Underscores                       |
 
-Any characters not listed in the first column of the above table are not allowed.
+Any characters not listed in the first column of the table above are not allowed.
 
 Snap configuration options for setting env file paths:
 
